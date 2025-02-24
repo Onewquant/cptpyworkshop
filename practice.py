@@ -1,28 +1,14 @@
-"""
-## 환경설정 (pycharm)
-"""
-
-# Pycharm
-# PycharmProject에 project 생성
-# venv 설정
 
 """
 ## 자료형 (str, int, float, boolean, set, list, tuple, dictionary)
 """
 
-############ [str 자료형] ############
-
-
 str_var = "홍길동_87_Vancomycin"
 print(str_var)
 
-# 슬라이싱(slicing)
-
-print(str_var[2:7])
-
 # split 메소드
 
-print(str_var.split("_"))
+print(str_var.split("87"))
 
 # strip 메소드
 
@@ -30,27 +16,22 @@ str_var = "    홍길동_87_Vancomycin  "
 print(str_var.strip())
 
 # replace 메소드
-
 print(str_var.replace("Vancomycin","Amikacin"))
-
-str_var = str_var.replace("Vancomycin","Amikacin")  # 바로 저장되는게 아니고 변수에 할당해야 변경됨
-print(str_var)
 
 # upper case / lower case
 
 upper_str = str_var.upper()
 print(upper_str)
-
 lower_str = str_var.lower()
 print(lower_str)
-
 
 # 연산 (+)
 
 str_var1 = '동길홍_90_Amikacin'
 str_var2 = '_peak(35)trough(2.5)'
-sum_str_var = str_var1 + str_var2
+sum_str_var = str_var1 + str_var2 + " / 완료했음"
 print(sum_str_var)
+
 
 # formatting
 
@@ -62,16 +43,25 @@ age = 55
 str_var = f'길동이_{age}_{drug}'
 print(str_var)
 
+
 # str 자료로 변환
 
 list_str = str(['1', '2', '3'])
 print(list_str)
 
 
+# 슬라이싱(slicing)
+
+print(list_str[2:7])
+print(list_str[3:])
+print(list_str[3:])
+
+
 ############ [float, int 자료형] ############
 
 int_var = 3
 float_var = 5.01
+
 
 ## 연산
 
@@ -120,7 +110,8 @@ print(rfvar2)
 # 올림, 내림
 
 import math
-new_fvar1 = math.ceil(fvar1)
+
+new_fvar1 = math.ceil(fvar1*10)/10
 print(new_fvar1)
 
 new_fvar3 = math.floor(fvar3)
@@ -129,6 +120,8 @@ print(new_fvar3)
 print(math.sqrt(4))        # 제곱근
 print(math.exp(4))         # 밑이 e인 지수
 print(math.log(4))         # 밑이 e인 로그
+
+
 
 ############ [Boolean 자료형] ############
 
@@ -152,7 +145,7 @@ date3 = '2025-01-24T13:22'
 print(date1 < date2)
 print(date1 > date3)
 
-print(f"날짜 {date1}은 {date2}보다 크다: {date1 > date3}")
+print(f"날짜 {date1}은 {date2}보다 크다: {date1 > date2}")
 
 ############ [set 자료형] ############ (원소 중복 불허 / 순서가 없어 슬라이싱 불가)
 
@@ -182,9 +175,11 @@ set4 = set1&set2
 print(f"set1과 set2의 교집합: ",set4)
 
 # -: 차집합 구하기
+set1.difference(set2)
 
 set4 = set1-set2
 print(f"set1과 set2의 차집합: ",set4)
+
 
 ############ [list 자료형] ############ (원소 중복 허용)
 
@@ -211,7 +206,7 @@ print(list3)
 list1.append('Phenytoin')      # list1이 바로 바뀜 (따로 값이 return 되는게 아님)
 print(f"원소 추가된 list1: ",list1)
 
-# union: 두 리스트 합치기
+# +: 두 리스트 합치기
 
 list4 = list1 + list2
 print(f"list1과 list2의 합: ",list4)
@@ -219,7 +214,7 @@ print(f"list1과 list2의 합: ",list4)
 # sort: 순서대로 정렬
 
 list2.sort()     # list2가 바로 바뀜 (따로 값이 return 되는게 아님)
-print(f"set1과 set2의 교집합: ",list2)
+print(list2)
 
 # len: 길이 구하기
 
@@ -240,11 +235,10 @@ print(drug_tup[1:3])
 
 drug_tup[0] = 'digoxin'
 
-
 ############ [dictionary 자료형] ############ (원소 중복 불허 / key 와 value 값)
 
 empty_dict = dict()
-
+empty_dict = dict()
 print(empty_dict)
 
 target_str = 'Target: AUC 400 ~ 600 / Target: peak > 25 trough < 5 / Target: peak and trough 50 ~ 100'
@@ -274,28 +268,25 @@ dict2 = {'Valproate':target_list[2], 'Digoxin': 'Target: peak and trough 0.5~1.0
 dict1.update(dict2)
 print(dict1)
 
-# dict 를 원소가 tuple로 구성된 list로 변환
-dict_to_tup_list = list(drug_dict.items())
-print(dict_to_tup_list)
-
 """
 ## 반복문 (for, while)
 """
 
 # for문
 
-for c in list2:
-    print("Drugname: "+c)
+for raw in list2:
+    print("Drugname: "+raw)
 
 # for문에서 변수 연속적으로 변환하기
 
 drug_str = ''
 for s in list2:
     drug_str = drug_str + ' ' + s
-    drug_str+= '_ <-'
+    drug_str += '_ <-'
 print(drug_str)
 
 # for문에서 숫자로 된 iteration
+
 
 drug_str = ''
 for i in range(len(list2)):
@@ -315,6 +306,12 @@ print(drug_str)
 """
 ## 조건문 (if)
 """
+if True:
+    print('OK')
+
+if False:
+    print('OK')
+
 
 ## if 만
 
@@ -337,49 +334,28 @@ elif list2[1]=='Digosin':
 else:
     print('아무 조건에도 해당되지 않습니다.')
 
-"""
-## for문, if문 합작
-"""
-
-for i, drug in enumerate(list2):
-    if i==0:
-        print(f"({i}) {drug}")
-
-    if drug == 'Digosin':
-        print(f"{drug}이 나왔습니다. for문을 지속합니다")
-        continue
-
-    if drug=='Prednisone':
-        print(f"{drug}이 나왔습니다. for문을 종료합니다")
-        break
-
-    print('다음 넘어가자')
-
-"""
-## Small projects
-"""
-
-import pandas as pd
-
 pt_list = ['홍길동','동길홍','길동이','길냥이','강아지','고양이','토끼']
 drug_list = [('Vancomycin','25/01/03'),('Vancomycin','25/01/05'),('Amikacin','25/03/09'),('Amikacin','25/03/09'),('Amikacin','25/05/09'),('Gentamicin','25/07/09'),('Gentamicin','25/07/09')]
 
+"홍길동_Vancomycin_25/01/03 <- 동길홍_Vancomycin_25/01/05 <- 길동이_Amikacin_25/03/09 <- 길냥이_Amikacin_25/03/09 <- 강아지_Amikacin_25/05/09 <- 고양이_Gentamicin_25/07/09 <- 토끼_Gentamicin_25/07/09"
+
 final_str = ''
 for i in range(len(pt_list)):
+
+    if pt_list[i]=='길동이':
+        break
+
     frag_str = f"{pt_list[i]}_{drug_list[i][0]}_{drug_list[i][1]}"
     final_str += (frag_str + ' <- ')
+
 final_str = final_str[:-4]
 print(final_str)
+
 
 """
 ## 데이터분석용 패키지 (pandas, numpy, scipy, seaborn, datetime, sklearn)
 """
 
-
-
-"""
-## pandas DataFrame 다루기
-"""
 import numpy as np
 import pandas as pd
 
@@ -387,75 +363,3 @@ import pandas as pd
 
 df = pd.read_csv('C:/Users/ilma0/PycharmProjects/cptpyworkshop/resource_for_workshop/VO6_5.csv')
 mdf = pd.read_csv('C:/Users/ilma0/PycharmProjects/cptpyworkshop/resource_for_workshop/missingdata.csv')
-
-## DataFrame의 구조
-# index, row, column,
-
-list(df.index)
-list(df.columns)
-pd.Series
-
-pd.DataFrame({'ID':[1,2,3,4,5,6,7], 'SEX':['F','M','F','M','F','M','M']})
-
-## 로드, 슬라이싱, index 와 columns 조작
-
-# index, columns: 특정 컬럼 조회 / 특정 컬럼들이 포함된 DataFrame 조회 / 특정 컬럼 추가
-
-df['ID']
-df['DV']
-df[['ID','DV','AMT']]
-
-df['DVV'] = 1
-df['DVV'] = [7]*df.shape[0]
-df['Project'] = 'Vanco_Obe'
-
-df = df.rename(columns={'ID':'PID','WT':'Weight'})
-
-# 슬라이싱: loc[], iloc[], at[], iat[]
-# 조건에 맞는 row 선택: df[df['Drug']=='Vancomycin'],   df[~df['Dose'].isna()]
-
-df.iloc[4,4]
-
-df.iloc[4:10, 4:9]
-df.iloc[4:300:2, 4:9:2]
-df.loc[4:10, 'AMT']
-df.loc[4:10, 'AMT':]
-
-df['AGE'].unique()
-for k, fdf in df.groupby(['AGE']):
-    break
-
-df.groupby(['AGE']).agg({'PID':'count', 'AMT':'first', 'TIME':'last'})
-
-# reset_index(drop=True)
-# set_index(inplace=True)
-
-
-for pid in df['PID'].unique():
-    frag_df = df[df['PID']==pid]
-    frag_df['']
-    # if
-
-# 컬럼끼리 연산
-# 컬럼값을 연산 ds.mean(), .min(), .max(), .sum(), .median(), .quantile(0.3), .count(), first(), .last()
-
-
-# 결측치 처리(dropna(axis=1), fillna('.'), fillna(method='ffill')
-
-# df.merge(df2, how='left', on=['id','TAD'])
-# pd.concat([df1, df2], axis=0)
-
-# df.groupby(['Formulation','Dose']).agg({'id':'count', 'Dose':'mean', 'TAD':'last'})
-
-# df['id'].map(lambda x:x.split('_'))
-# apply, applymap
-
-# df.melt(id_vars=['province'], var_name='sex', value_name='average_float_age')
-
-# for inx, row in df.iterrows():
-#      ~~
-
-"""
-## Project 실전 연습
-"""
-
