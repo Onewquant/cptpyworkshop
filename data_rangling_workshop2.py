@@ -15,6 +15,8 @@ output_dir = f"{resource_dir}/prep_data"
 
 ## Data Load
 
+
+met_conc_rdf = pd.read_csv(f"{resource_dir}/Conc_RawData/CKD-383 FDI CONC - Metformin_Conc.csv")
 scn_to_sjn_rdf = pd.read_excel(f"{resource_dir}/A101_06FDI2404_Disposition.xlsx")
 adm_rdf = pd.read_csv(f"{input_dir}/ex.csv")
 conc_time_rdf = pd.read_csv(f"{input_dir}/pc.csv")
@@ -26,7 +28,7 @@ df = pd.read_csv(f"{output_dir}/CKD383_ConcPrep_Metformin(Phoenix).csv")
 
 list(df.index)
 list(df.columns)
-pd.Series
+pd.Series([1,2,3,4,5,6,7])
 
 pd.DataFrame({'ID':[1,2,3,4,5,6,7], 'SEX':['F','M','F','M','F','M','M']})
 
@@ -42,12 +44,6 @@ df['Project'] = 'CKD-383'
 
 df['SEQUENCE'] = 1
 df['SEQUENCE'] = df['ID']
-df['SEQUENCE'] = df['ID'].map(lambda x:x[0])
-df['SEQUENCE'] = df['SEQUENCE'].map({'A':1,'B':2})
-
-seq_dict = {'A':1,'B':2}
-df['SEQUENCE'] = df['ID'].map(lambda x:seq_dict[x[0]])
-
 
 df = df.rename(columns={'DRUG':'ADM_DRUG','FEEDING':'FED'})
 df = df.rename(columns={'ADM_DRUG':'DRUG','FED':'FEEDING'})
@@ -63,7 +59,6 @@ df.loc[4:10, 'ATIME':]
 
 df.iat[2,7]
 df.at[1,'CONC']
-
 
 # 조건에 맞는 row 선택
 
@@ -96,37 +91,66 @@ ndf = df.sort_values(['CONC2','PERIOD'])
 ndf = ndf.reset_index(drop=True)
 ndf.set_index(keys=['ID','PERIOD'])
 
+# unique
 
-df['AGE'].unique()
-for k, fdf in df.groupby(['AGE']):
-    break
-
-df.groupby(['AGE']).agg({'PID':'count', 'AMT':'first', 'TIME':'last'})
-
-
-for pid in df['PID'].unique():
-    frag_df = df[df['PID']==pid]
-    frag_df['']
-    # if
+ndf['ID'].unique()
+ndf['NTIME'].unique()
 
 # 컬럼끼리 연산
-# 컬럼값을 연산 ds.mean(), .min(), .max(), .sum(), .median(), .quantile(0.3), .count(), first(), .last()
 
+ndf['CONC2'] + ndf['CONC2']
+ndf['CONC2'] - ndf['CONC2']
+ndf['CONC2'] * ndf['CONC2']
+ndf['CONC2'] / ndf['CONC2']
 
+# 컬럼값을 연산 .min(), ds.mean(), .max(), .sum(), .median(), .quantile(0.3), .count(), first(), .last()
 
+ndf['CONC2'].first()
+ndf['CONC2'].min()
+ndf['CONC2'].mean()
+ndf['CONC2'].max()
+ndf['CONC2'].sum()
+ndf['CONC2'].median()
+ndf['CONC2'].quantile(0.3)
+ndf['CONC2'].last()
 
-# df.merge(df2, how='left', on=['id','TAD'])
-# pd.concat([df1, df2], axis=0)
+# clip()
 
-# df.groupby(['Formulation','Dose']).agg({'id':'count', 'Dose':'mean', 'TAD':'last'})
+ndf['CONC2'].clip(3,20)
 
-# df['id'].map(lambda x:x.split('_'))
-# apply, applymap
+# map, apply, applymap, iterrows()
 
-# df.melt(id_vars=['province'], var_name='sex', value_name='average_float_age')
+df['SEQUENCE'] = df['ID'].map(lambda x:x[0])
+df['SEQUENCE'] = df['SEQUENCE'].map({'A':1,'B':2})
 
-# for inx, row in df.iterrows():
-#      ~~
+seq_dict = {'A':1,'B':2}
+df['SEQUENCE'] = df['ID'].map(lambda x:seq_dict[x[0]])
+
+# groupby
+
+for k, fdf in ndf.groupby(['ID']):
+    print(fdf)
+    break
+
+ndf.groupby(['ID']).agg({'ID':'count', 'CONC2':'max', 'ATIME':'last'})
+
+ndf.groupby(['ID','PERIOD']).agg({'ID':'count', 'CONC2':'max', 'ATIME':'last'})
+
+# merge
+
+ndf['TEST_COL1']=list(range(len(df)))
+ndf['TEST_COL2']=list(np.ones(len(df)))
+df.merge(ndf[['ID', 'ATIME', 'TEST_COL1', 'TEST_COL2']], how='left', on=['ID','ATIME'])
+
+# concat
+
+df1 = ndf.iloc[:10]
+df2 = ndf.iloc[30:50]
+pd.concat([df1, df2], axis=0)
+
+# melt
+
+met_conc_rdf.melt(id_vars=['Drug','Period','Subjects'], var_name='NTIME', value_name='CONC')
 
 """
 ## Project 실전 연습
