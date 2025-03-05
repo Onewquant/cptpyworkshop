@@ -9,13 +9,21 @@ resource_dir = "C:/Users/ilma0/PycharmProjects/cptpyworkshop/resource_for_worksh
 input_dir = f"{resource_dir}/SAS_RawData(csv)"
 output_dir = f"{resource_dir}/prep_data"
 
+conc_value_rdf = pd.read_csv(f"{resource_dir}/Conc_RawData/CKD-383 FDI CONC - Metformin_Conc.csv")
 scn_to_sjn_rdf = pd.read_excel(f"{resource_dir}/A101_06FDI2404_Disposition.xlsx")
 adm_rdf = pd.read_csv(f"{input_dir}/ex.csv")
 conc_time_rdf = pd.read_csv(f"{input_dir}/pc.csv")
 
+
+"""
+['ID', 'DOSE', 'NTIME', 'ATIME', 'CONC', 'PERIOD', 'FEEDING', 'DRUG']
+"""
+
+# Screening number <-> ID   변환시키는 dictionary 만들어두기
+
 scn_to_sjn_rdf['ID'] = scn_to_sjn_rdf['SubjectNr']
 scn_to_sjn_rdf['SID'] = scn_to_sjn_rdf['ScreeningNr']
-scn_to_sjn_rdf = scn_to_sjn_rdf.dropna().reset_index(drop=True)
+scn_to_sjn_rdf = scn_to_sjn_rdf.dropna(axis=0).reset_index(drop=True)
 sid_to_id_dict = dict()
 id_to_dict = dict()
 for inx, row in scn_to_sjn_rdf[['ID','SID']].iterrows():
@@ -24,16 +32,9 @@ for inx, row in scn_to_sjn_rdf[['ID','SID']].iterrows():
 
 pk_analysis_set_list = scn_to_sjn_rdf[scn_to_sjn_rdf['Pharmacokinetic Set']=='O']['ID']
 
-drug_dose_dict = {'Lobeglitazone': 0.5, 'Empagliflozin': 25, 'Metformin': 2000}
-# dose_unit_dict = {'Lobeglitazone': 'mg', 'Empagliflozin': 'mg', 'Metformin': 'mg'}
-# conc_unit_dict = {'Lobeglitazone': 'ng/mL', 'Empagliflozin': 'ng/mL', 'Metformin': 'ng/mL'}
-conc_value_rdf = list()
-for drug in drug_dose_dict.keys():
-    cv_frag_df = pd.read_csv(f"{resource_dir}/Conc_RawData/CKD-383 FDI CONC - {drug}_Conc.csv")
-    cv_frag_df = pd.melt(cv_frag_df, id_vars=['Drug', 'Period', 'Subjects'], var_name='NTIME', value_name='CONC')
-    conc_value_rdf.append(cv_frag_df)
-conc_value_rdf = pd.concat(conc_value_rdf)
-conc_value_rdf['DRUG'] = conc_value_rdf['Drug']
+conc_value_rdf = pd.melt(conc_value_rdf, id_vars=['Drug', 'Period', 'Subjects'], var_name='NTIME', value_name='CONC')
+
+conc_value_rdf['DRUG'] = 'Metformin'
 conc_value_rdf['ID'] = conc_value_rdf['Subjects']
 conc_value_rdf['SID'] = conc_value_rdf['ID'].map(id_to_dict)
 conc_value_rdf['PERIOD'] = conc_value_rdf['Period']
@@ -55,8 +56,9 @@ conc_time_rdf = conc_time_rdf[['ID', 'SID', 'PERIOD', 'NTIME', 'ATIME_DT']]
 
 prep_df = conc_value_rdf.merge(adm_rdf, how='left',on=['ID', 'SID', 'PERIOD'])
 prep_df = prep_df.merge(conc_time_rdf, how='left',on=['ID', 'SID', 'PERIOD', 'NTIME'])
-prep_df['DOSE'] = prep_df['DRUG'].map(drug_dose_dict)
+prep_df['DOSE'] = 2000
 
+(datetime.strptime('2024-07-23 09:00:00','%Y-%m-%d %H:%M:%S') - datetime.strptime('2024-07-23 08:48:00','%Y-%m-%d %H:%M:%S')).total_seconds()/3600
 
 prep_df['NTIME'] = prep_df['NTIME'].map(lambda x:float(x.replace('h','')))
 

@@ -15,7 +15,6 @@ output_dir = f"{resource_dir}/prep_data"
 
 ## Data Load
 
-
 met_conc_rdf = pd.read_csv(f"{resource_dir}/Conc_RawData/CKD-383 FDI CONC - Metformin_Conc.csv")
 scn_to_sjn_rdf = pd.read_excel(f"{resource_dir}/A101_06FDI2404_Disposition.xlsx")
 adm_rdf = pd.read_csv(f"{input_dir}/ex.csv")
@@ -26,8 +25,11 @@ df = pd.read_csv(f"{output_dir}/CKD383_ConcPrep_Metformin(Phoenix).csv")
 ## DataFrame의 구조
 # index, row, column,
 
+
+
 list(df.index)
 list(df.columns)
+list(df.values)
 pd.Series([1,2,3,4,5,6,7])
 
 pd.DataFrame({'ID':[1,2,3,4,5,6,7], 'SEX':['F','M','F','M','F','M','M']})
@@ -53,7 +55,7 @@ df = df.rename(columns={'ADM_DRUG':'DRUG','FED':'FEEDING'})
 df.iloc[4,4]
 
 df.iloc[4:10, 4:9]
-df.iloc[4:300:2, 4:9:2]
+df.iloc[4:300:4, 4:9:2]
 df.loc[4:10, 'ATIME']
 df.loc[4:10, 'ATIME':]
 
@@ -76,6 +78,7 @@ df['CONC2'] = df['CONC2'].astype(float)
 df['CONC2'] = df['CONC'].replace('.',np.nan).astype(float)
 
 df[~df['CONC2'].isna()]
+df[df['CONC2'].isna()]
 
 # 결측치 처리(dropna(axis=1), fillna('.'), fillna(method='ffill')
 
@@ -87,8 +90,9 @@ df.fillna(method='bfill')
 
 # sort_values, reset_index, set_index
 
-ndf = df.sort_values(['CONC2','PERIOD'])
+ndf = df.sort_values(['CONC2','PERIOD'],ascending=[True,False])
 ndf = ndf.reset_index(drop=True)
+# ndf.drop(['index'], axis=1)
 ndf.set_index(keys=['ID','PERIOD'])
 
 # unique
@@ -98,37 +102,44 @@ ndf['NTIME'].unique()
 
 # 컬럼끼리 연산
 
-ndf['CONC2'] + ndf['CONC2']
-ndf['CONC2'] - ndf['CONC2']
-ndf['CONC2'] * ndf['CONC2']
-ndf['CONC2'] / ndf['CONC2']
+ndf['CONC3'] = ndf['CONC2'] + ndf['CONC2'] - ndf['CONC2']
+ndf['CONC3'] = ndf['CONC2'] - ndf['CONC2']
+ndf['CONC3'] = ndf['CONC2'] * ndf['CONC2']
+ndf['CONC3'] = ndf['CONC2'] / ndf['CONC2']
 
 # 컬럼값을 연산 .min(), ds.mean(), .max(), .sum(), .median(), .quantile(0.3), .count(), first(), .last()
 
-ndf['CONC2'].first()
+ndf['CONC2']
 ndf['CONC2'].min()
 ndf['CONC2'].mean()
 ndf['CONC2'].max()
 ndf['CONC2'].sum()
 ndf['CONC2'].median()
 ndf['CONC2'].quantile(0.3)
-ndf['CONC2'].last()
+ndf['CONC2']
 
 # clip()
 
-ndf['CONC2'].clip(3,20)
+ndf['CONC2'].clip(0,20)
 
 # map, apply, applymap, iterrows()
 
 df['SEQUENCE'] = df['ID'].map(lambda x:x[0])
 df['SEQUENCE'] = df['SEQUENCE'].map({'A':1,'B':2})
 
+
+
 seq_dict = {'A':1,'B':2}
 df['SEQUENCE'] = df['ID'].map(lambda x:seq_dict[x[0]])
 
+
+df['SEQ2'] = df.apply(lambda x:x['ID']+'_'+str(x['NTIME']),axis=1)
+
+df.applymap(lambda x:str(x))
+
 # groupby
 
-for k, fdf in ndf.groupby(['ID']):
+for k, fdf in ndf.groupby(['ID','PERIOD']):
     print(fdf)
     break
 
@@ -140,7 +151,14 @@ ndf.groupby(['ID','PERIOD']).agg({'ID':'count', 'CONC2':'max', 'ATIME':'last'})
 
 ndf['TEST_COL1']=list(range(len(df)))
 ndf['TEST_COL2']=list(np.ones(len(df)))
-df.merge(ndf[['ID', 'ATIME', 'TEST_COL1', 'TEST_COL2']], how='left', on=['ID','ATIME'])
+ndf2 = ndf[['ID', 'ATIME', 'TEST_COL1', 'TEST_COL2']]
+df.merge(ndf2, how='left', on=['ID','ATIME'])
+
+
+# df1 = pd.DataFrame({'A':[1,2,3,4,5,6,8], 'B':['A','A','B','B','C','C','D']})
+# df2 = pd.DataFrame({'A':[17,3,5,9,10,4,1,3], 'C':['G','F','T','U','U','U','Q','WW']})
+# df1.merge(df2, how='left', on=['A'])
+
 
 # concat
 
