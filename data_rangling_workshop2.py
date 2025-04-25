@@ -24,7 +24,7 @@ df = pd.read_csv(f"{output_dir}/CKD383_ConcPrep_Metformin(Phoenix).csv")
 
 ## DataFrame의 구조
 # index, row, column,
-
+{'A':[1,2,4,5,5], 'B':[1,3,5,1,3]}
 
 
 list(df.index)
@@ -51,13 +51,13 @@ df = df.rename(columns={'DRUG':'ADM_DRUG','FEEDING':'FED'})
 df = df.rename(columns={'ADM_DRUG':'DRUG','FED':'FEEDING'})
 
 # 슬라이싱: loc[], iloc[], at[], iat[]
-
-df.iloc[4,4]
+df.loc[4,'ATIME']
+df.iloc[4,3]
 
 df.iloc[4:10, 4:9]
 df.iloc[4:300:4, 4:9:2]
 df.loc[4:10, 'ATIME']
-df.loc[4:10, 'ATIME':]
+df.loc[4:10, 'ATIME':'DRUG']
 
 df.iat[2,7]
 df.at[1,'CONC']
@@ -89,9 +89,9 @@ df.fillna(method='ffill')
 df.fillna(method='bfill')
 
 # sort_values, reset_index, set_index
-
+df.sort_values(['ID'],ascending=False)
 ndf = df.sort_values(['CONC2','PERIOD'],ascending=[True,False])
-ndf = ndf.reset_index(drop=True)
+ndf = ndf.reset_index(drop=False)
 # ndf.drop(['index'], axis=1)
 ndf.set_index(keys=['ID','PERIOD'])
 
@@ -124,9 +124,10 @@ ndf['CONC2'].clip(0,20)
 
 # map, apply, applymap, iterrows()
 
+
+
 df['SEQUENCE'] = df['ID'].map(lambda x:x[0])
 df['SEQUENCE'] = df['SEQUENCE'].map({'A':1,'B':2})
-
 
 
 seq_dict = {'A':1,'B':2}
@@ -134,6 +135,7 @@ df['SEQUENCE'] = df['ID'].map(lambda x:seq_dict[x[0]])
 
 
 df['SEQ2'] = df.apply(lambda x:x['ID']+'_'+str(x['NTIME']),axis=1)
+
 
 df.applymap(lambda x:str(x))
 
@@ -168,8 +170,41 @@ pd.concat([df1, df2], axis=0)
 
 # melt
 
-met_conc_rdf.melt(id_vars=['Drug','Period','Subjects'], var_name='NTIME', value_name='CONC')
+pv_df = met_conc_rdf.melt(id_vars=['Drug','Period','Subjects'], var_name='NTIME', value_name='CONC')
+
+# pivot
+
+pdf = pv_df.pivot(index=['Drug','Period','Subjects'], columns='NTIME', values='CONC')
+pdf.columns.name = None
+pdf = pdf.reset_index(drop=False)
+
+pdf.to_csv()
+pdf.to_excel
 
 """
 ## Project 실전 연습
 """
+conc_df = df.copy()
+min_df = df.copy()
+
+res_df=list()
+for inx, row in min_df:
+    """
+    ID / MIN_DATE / END_DATE = MIN_DATE + 14
+    """
+    filt_df = conc_df[(conc_df['ID']==row["ID"]) & (conc_df['DATETIME'] >= row['MIN_DATE']) & (conc_df['DATETIME'] <= row['END_DATE'])]
+    res_df.append(filt_df)
+
+res_df = pd.concat(res_df)
+
+from datetime import *
+
+date_str = '2010-01-04T04:07'
+
+datetime_var = datetime.strptime(date_str,'%Y-%m-%dT%H:%M') + timedelta(days=14)
+
+datetime.strftime(datetime_var,'%Y-%m-%dT%H:%M')
+
+df['MIN_DT'] = '2010-01-04T04:07'
+
+pd.to_datetime(df['MIN_DT']) + pd.Timedelta(days=14)
